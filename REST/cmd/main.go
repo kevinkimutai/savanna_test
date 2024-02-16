@@ -1,3 +1,37 @@
 package main
 
-func main() {}
+import (
+	"log"
+	"os"
+
+	"github.com/joho/godotenv"
+	"github.com/kevinkimutai/savanna/rest/internal/adapters/db"
+	"github.com/kevinkimutai/savanna/rest/internal/adapters/server"
+	"github.com/kevinkimutai/savanna/rest/internal/application/api"
+)
+
+func main() {
+	// Load environment variables from .env file
+	err := godotenv.Load()
+	if err != nil {
+
+		log.Fatal("error loading .env file", err)
+	}
+
+	//ENV variables
+	DBURL := os.Getenv("POSTGRES_URL")
+	PORT := os.Getenv("PORT")
+
+	dbAdapter, err := db.NewAdapter(DBURL)
+	if err != nil {
+		log.Fatal("error connecting to db", err)
+	}
+
+	application := api.NewApplication(dbAdapter)
+
+	server := server.NewAdapter(application, PORT)
+
+	//Start Server
+	server.Run()
+
+}

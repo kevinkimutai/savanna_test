@@ -21,6 +21,7 @@ func NewAdapter(dbString string) (*Adapter, error) {
 	if openErr != nil {
 		return nil, fmt.Errorf("db connection error: %v", openErr)
 	}
+
 	err := db.AutoMigrate(&Customer{}, &Order{})
 	if err != nil {
 		return nil, fmt.Errorf("db migration error: %v", err)

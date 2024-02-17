@@ -1,7 +1,12 @@
 package ports
 
-import "github.com/kevinkimutai/savanna/rest/internal/application/domain"
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/kevinkimutai/savanna/rest/internal/application/domain"
+)
 
 type APIPort interface {
-	CreateCustomer(customer *domain.Customer) (*domain.Customer, error)
+	CreateCustomer(customer *domain.Customer) error
+	Login(fiber *fiber.Ctx) error
+	Callback(fiber *fiber.Ctx) error
 }

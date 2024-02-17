@@ -22,7 +22,8 @@ func (a Adapter) Run() {
 	app.Use(logger.New())
 
 	//API ROUTES
-	app.Route("/api/v1/customer", a.CustomerRouter)
+	app.Route("/api/v1/auth", a.authRouter)
+	//app.Route("/api/v1/customer", a.CustomerRouter)
 
 	app.Listen(":" + a.port)
 

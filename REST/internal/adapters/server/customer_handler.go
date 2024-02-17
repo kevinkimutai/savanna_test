@@ -17,5 +17,6 @@ func (a Adapter) CreateCustomer(c *fiber.Ctx) error {
 	}
 
 	//Create Customer
-	a.api.CreateCustomer(customer)
+	return a.api.CreateCustomer(customer)
+
 }

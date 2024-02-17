@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/kevinkimutai/savanna/rest/internal/adapters/authenticator"
 	"github.com/kevinkimutai/savanna/rest/internal/adapters/db"
 	"github.com/kevinkimutai/savanna/rest/internal/adapters/server"
 	"github.com/kevinkimutai/savanna/rest/internal/application/api"
@@ -27,7 +28,12 @@ func main() {
 		log.Fatal("error connecting to db", err)
 	}
 
-	application := api.NewApplication(dbAdapter)
+	auth, err := authenticator.New()
+	if err != nil {
+		log.Fatalf("Failed to initialize the authenticator: %v", err)
+	}
+
+	application := api.NewApplication(dbAdapter, auth)
 
 	server := server.NewAdapter(application, PORT)
 

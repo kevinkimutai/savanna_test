@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"errors"
+	"log/slog"
 	"net/http"
 	"os"
 
@@ -59,6 +60,7 @@ func (a *Authenticator) VerifyIDToken(ctx context.Context, token *oauth2.Token) 
 }
 
 func (a *Authenticator) Login(c *fiber.Ctx) error {
+
 	state, err := generateRandomState()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
@@ -73,8 +75,11 @@ func (a *Authenticator) Login(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
 
+	authURL := a.AuthCodeURL(state)
+	slog.Info("URL", "Authorization URL", authURL)
+
 	// Redirect with the generated state
-	return c.Redirect(a.AuthCodeURL(state), fiber.StatusTemporaryRedirect)
+	return c.Status(fiber.StatusTemporaryRedirect).JSON(authURL)
 
 }
 

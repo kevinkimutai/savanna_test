@@ -10,6 +10,7 @@ import (
 )
 
 func (a Adapter) Login(c *fiber.Ctx) error {
+
 	response := a.api.Login(c)
 
 	return response
@@ -68,4 +69,15 @@ func (a Adapter) Logout(c *fiber.Ctx) error {
 
 	// Redirect to logout URL
 	return c.Redirect(logoutUrl.String(), http.StatusTemporaryRedirect)
+}
+
+func IsAuthenticated(c *fiber.Ctx) error {
+	// Check if the user is authenticated
+	if c.Locals("profile") == nil {
+		// Redirect to the homepage if the user is not authenticated
+		return c.Status(fiber.StatusUnauthorized).SendString("Unauthorised.")
+	}
+
+	// Call the next middleware or handler
+	return c.Next()
 }

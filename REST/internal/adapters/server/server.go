@@ -12,7 +12,7 @@ type Adapter struct {
 }
 
 func NewAdapter(api ports.APIPort, port string) *Adapter {
-	return &Adapter{port: port}
+	return &Adapter{api: api, port: port}
 }
 
 func (a Adapter) Run() {

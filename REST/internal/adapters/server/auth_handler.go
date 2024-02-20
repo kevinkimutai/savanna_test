@@ -1,28 +1,29 @@
 package server
 
 import (
+	"log/slog"
 	"net/http"
 	"net/url"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/session"
 )
 
-func (a Adapter) Login(c *fiber.Ctx) error {
+func (a *Adapter) Login(c *fiber.Ctx) error {
 
-	response := a.api.Login(c)
+	response := a.api.Login(c, a.GetSessionStore())
 
 	return response
 }
 func (a Adapter) Callback(c *fiber.Ctx) error {
-	response := a.api.Callback(c)
+	response := a.api.Callback(c, a.GetSessionStore())
 
 	return response
 }
 
 func (a Adapter) User(c *fiber.Ctx) error {
-	store := session.New()
+
+	store := a.GetSessionStore()
 
 	sess, err := store.Get(c)
 	if err != nil {
@@ -42,7 +43,7 @@ func (a Adapter) User(c *fiber.Ctx) error {
 
 }
 
-func (a Adapter) Logout(c *fiber.Ctx) error {
+func (a *Adapter) Logout(c *fiber.Ctx) error {
 	// Parse logout URL
 	logoutUrl, err := url.Parse("https://" + os.Getenv("AUTH0_DOMAIN") + "/v2/logout")
 	if err != nil {
@@ -77,6 +78,8 @@ func IsAuthenticated(c *fiber.Ctx) error {
 		// Redirect to the homepage if the user is not authenticated
 		return c.Status(fiber.StatusUnauthorized).SendString("Unauthorised.")
 	}
+
+	slog.Info("USER", "user", c.Locals("profile"))
 
 	// Call the next middleware or handler
 	return c.Next()

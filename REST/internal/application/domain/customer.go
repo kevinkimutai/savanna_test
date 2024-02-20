@@ -3,12 +3,12 @@ package domain
 import "errors"
 
 type Customer struct {
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
+	ID   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 func NewCustomer(customer *Customer) (*Customer, error) {
-	if customer.FirstName == "" || customer.LastName == "" {
+	if customer.Name == "" {
 		return customer, errors.New("missing customers values")
 	}
 

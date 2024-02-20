@@ -59,24 +59,26 @@ func (a *Authenticator) VerifyIDToken(ctx context.Context, token *oauth2.Token) 
 	return a.Verifier(oidcConfig).Verify(ctx, rawIDToken)
 }
 
-func (a *Authenticator) Login(c *fiber.Ctx) error {
+func (a *Authenticator) Login(c *fiber.Ctx, store *session.Store) error {
 
 	state, err := generateRandomState()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
 
-	store := session.New()
-
-	// Save the state inside the session.
-	session, _ := store.Get(c)
-	session.Set("state", state)
-	if err := session.Save(); err != nil {
+	sess, err := store.Get(c)
+	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
 
+	sess.Set("state", state)
+	if err := sess.Save(); err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+
+	slog.Info("MYSTATE", "state", sess.Get("state"))
+
 	authURL := a.AuthCodeURL(state)
-	slog.Info("URL", "Authorization URL", authURL)
 
 	// Redirect with the generated state
 	return c.Status(fiber.StatusTemporaryRedirect).JSON(authURL)
@@ -96,20 +98,21 @@ func generateRandomState() (string, error) {
 }
 
 // Handler for our callback.
-func (a *Authenticator) Callback(c *fiber.Ctx) error {
+func (a *Authenticator) Callback(c *fiber.Ctx, store *session.Store) error {
 
-	store := session.New()
 	// Retrieve the session
 	sess, err := store.Get(c)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).SendString(err.Error())
 	}
 
+	slog.Info("Session", "store", store)
+	slog.Info("State", "state", sess.Get("state"))
 	// Validate the state parameter
-	state := c.Query("state")
-	if state != sess.Get("state") {
-		return c.Status(fiber.StatusBadRequest).SendString("Invalid state parameter.")
-	}
+	//state := c.Query("state")
+	// if state != sess.Get("state") {
+	// 	return c.Status(fiber.StatusBadRequest).SendString("Invalid state parameter.")
+	// }
 
 	// Exchange authorization code for a token
 	token, err := a.Exchange(c.Context(), c.Query("code"))
@@ -137,5 +140,5 @@ func (a *Authenticator) Callback(c *fiber.Ctx) error {
 	}
 
 	// Redirect to the logged-in page
-	return c.Redirect("/user", fiber.StatusTemporaryRedirect)
+	return c.Redirect("/api/v1/auth/user", fiber.StatusTemporaryRedirect)
 }

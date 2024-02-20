@@ -1,3 +1,7 @@
 package ports
 
-type DBPort interface{}
+import "github.com/kevinkimutai/savanna/rest/internal/application/domain"
+
+type DBPort interface {
+	CreateOrder(order *domain.Order) error
+}

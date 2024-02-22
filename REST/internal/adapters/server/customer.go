@@ -13,7 +13,7 @@ func (a *Adapter) CreateCustomer(c *fiber.Ctx) error {
 
 	customer, err := domain.NewCustomer(customer)
 	if err != nil {
-		c.Status(fiber.StatusBadRequest).SendString(err.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
 	}
 
 	//Create Customer
@@ -43,7 +43,7 @@ func (a *Adapter) GetCustomer(c *fiber.Ctx) error {
 
 	customerID := c.Query("customerId")
 	if customerID == "" {
-		c.Status(fiber.StatusBadRequest).SendString("missing customerID")
+		return c.Status(fiber.StatusBadRequest).SendString("missing customerID")
 	}
 
 	err := a.api.GetCustomer(customerID, customer)
@@ -60,7 +60,7 @@ func (a *Adapter) DeleteCustomer(c *fiber.Ctx) error {
 
 	customerID := c.Query("customerId")
 	if customerID == "" {
-		c.Status(fiber.StatusBadRequest).SendString("missing customerID")
+		return c.Status(fiber.StatusBadRequest).SendString("missing customerID")
 	}
 
 	err := a.api.DeleteCustomer(customerID, customer)

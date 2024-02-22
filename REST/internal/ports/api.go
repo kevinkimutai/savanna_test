@@ -21,4 +21,7 @@ type APIPort interface {
 	CreateOrder(order *domain.Order) error
 	GetOrders(order *domain.Order) error
 	GetOrder(orderID string, order *domain.Order) error
+
+	//SMS
+	SendSMS(msg string, phoneNumbers []string) (string, error)
 }

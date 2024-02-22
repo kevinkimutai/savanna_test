@@ -34,7 +34,12 @@ func NewAdapter(username string, apiKey string) *Adapter {
 
 }
 
-func (a Adapter) SendSMS() (string, error) {
+func (a Adapter) SendSMS(msg string, phoneNumbers []string) (string, error) {
+
+	//Change Adapter B4 Sending
+	a.bulkrequest.Message = msg
+    a.bulkrequest.To = phoneNumbers
+
 	response, err := a.client.SendBulk(&a.bulkrequest)
 	if err != nil {
 		return response.Message, err

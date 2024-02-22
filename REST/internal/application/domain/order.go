@@ -1,12 +1,16 @@
 package domain
 
-import "errors"
+import (
+	"errors"
+	"time"
+)
 
 type Order struct {
 	ID         int         `json:"id"`
 	CustomerID string      `json:"customer"`
 	Items      []OrderItem `json:"items"`
 	Total      float64     `json:"total"`
+	CreatedAt  time.Time   `json:"created_at"`
 }
 
 type OrderItem struct {

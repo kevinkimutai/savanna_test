@@ -1,3 +1,5 @@
 package ports
 
-type SMSPort interface{}
+type SMSPort interface{
+	SendSMS(msg string, phoneNumbers []string) (string, error)
+}

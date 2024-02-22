@@ -74,3 +74,10 @@ func (a Application) GetOrder(orderID string, order *domain.Order) error {
 
 	return response
 }
+
+// SMS
+func (a Application) SendSMS(msg string, phoneNumbers []string) (string, error) {
+	msg, err := a.sms.SendSMS(msg, phoneNumbers)
+
+	return msg, err
+}

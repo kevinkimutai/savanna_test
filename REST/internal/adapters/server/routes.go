@@ -12,11 +12,15 @@ func (a *Adapter) AuthRouter(api fiber.Router) {
 }
 
 func (a *Adapter) CustomerRouter(api fiber.Router) {
-	api.Get("/", IsAuthenticated, a.CreateCustomer)
+	api.Post("/", IsAuthenticated(a.store), a.CreateCustomer)
+	api.Get("/", IsAuthenticated(a.store), a.GetCustomers)
+	api.Get("/:customerId", IsAuthenticated(a.store), a.GetCustomer)
+	api.Delete("/:customerId", IsAuthenticated(a.store), a.DeleteCustomer)
 }
 
 func (a *Adapter) OrderRouter(api fiber.Router) {
 	api.Post("/", a.CreateOrder)
-	// api.Get("/", a.GetOrders)
-	// api.Get("/:orderId", a.GetOrder)
+	api.Get("/", a.GetOrders)
+	api.Get("/:orderId", a.GetOrder)
+
 }

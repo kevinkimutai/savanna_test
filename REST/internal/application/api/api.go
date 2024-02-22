@@ -1,8 +1,6 @@
 package api
 
 import (
-	"errors"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/kevinkimutai/savanna/rest/internal/application/domain"
@@ -38,8 +36,17 @@ func (a Application) CreateOrder(order *domain.Order) error {
 
 }
 
+// Customers
 func (a Application) CreateCustomer(customer *domain.Customer) error {
-	//a.db.CreateCustomer()
-	return errors.New("Not defined Yet")
+	response := a.db.CreateCustomer(customer)
+
+	return response
+
+}
+
+func (a Application) GetCustomers(customer *domain.Customer) error {
+	response := a.db.GetCustomers(customer)
+
+	return response
 
 }

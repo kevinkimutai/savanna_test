@@ -25,3 +25,7 @@ func (a *Adapter) CreateOrder(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(order)
 
 }
+
+func (a *Adapter) GetOrders(c *fiber.Ctx) error {}
+
+func (a *Adapter) GetOrder(c *fiber.Ctx) error {}

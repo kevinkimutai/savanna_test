@@ -1,12 +1,12 @@
 package server
 
 import (
-	"log/slog"
 	"net/http"
 	"net/url"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
 )
 
 func (a *Adapter) Login(c *fiber.Ctx) error {
@@ -72,15 +72,21 @@ func (a *Adapter) Logout(c *fiber.Ctx) error {
 	return c.Redirect(logoutUrl.String(), http.StatusTemporaryRedirect)
 }
 
-func IsAuthenticated(c *fiber.Ctx) error {
-	// Check if the user is authenticated
-	if c.Locals("profile") == nil {
-		// Redirect to the homepage if the user is not authenticated
-		return c.Status(fiber.StatusUnauthorized).SendString("Unauthorised.")
+func IsAuthenticated(store *session.Store) func(c *fiber.Ctx) error {
+	return func(c *fiber.Ctx) error {
+		sess, err := store.Get(c)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		}
+
+		// Check if the access token is present in the session
+		accessToken := sess.Get("access_token")
+		if accessToken == nil {
+			// If access token is not present, redirect to the login page
+			return c.Status(fiber.StatusUnauthorized).SendString("Unauthorised")
+		}
+
+		// User is authenticated, continue to the next handler
+		return c.Next()
 	}
-
-	slog.Info("USER", "user", c.Locals("profile"))
-
-	// Call the next middleware or handler
-	return c.Next()
 }

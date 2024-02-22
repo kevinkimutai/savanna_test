@@ -7,8 +7,15 @@ import (
 )
 
 type APIPort interface {
+	//Customer
 	CreateCustomer(customer *domain.Customer) error
+	GetCustomers(customer *domain.Customer) error
+	GetCustomer(customerID string, customer *domain.Customer) error
+
+	//Auth
 	Login(fiber *fiber.Ctx, store *session.Store) error
 	Callback(fiber *fiber.Ctx, store *session.Store) error
+
+	//Orders
 	CreateOrder(order *domain.Order) error
 }

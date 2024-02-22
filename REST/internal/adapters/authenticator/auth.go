@@ -4,9 +4,9 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/base64"
+	"encoding/gob"
 	"errors"
 	"log/slog"
-	"net/http"
 	"os"
 
 	"github.com/coreos/go-oidc/v3/oidc"
@@ -98,21 +98,13 @@ func generateRandomState() (string, error) {
 }
 
 // Handler for our callback.
-func (a *Authenticator) Callback(c *fiber.Ctx, store *session.Store) error {
 
+func (a *Authenticator) Callback(c *fiber.Ctx, store *session.Store) error {
 	// Retrieve the session
 	sess, err := store.Get(c)
 	if err != nil {
-		return c.Status(http.StatusInternalServerError).SendString(err.Error())
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
-
-	slog.Info("Session", "store", store)
-	slog.Info("State", "state", sess.Get("state"))
-	// Validate the state parameter
-	//state := c.Query("state")
-	// if state != sess.Get("state") {
-	// 	return c.Status(fiber.StatusBadRequest).SendString("Invalid state parameter.")
-	// }
 
 	// Exchange authorization code for a token
 	token, err := a.Exchange(c.Context(), c.Query("code"))
@@ -127,6 +119,7 @@ func (a *Authenticator) Callback(c *fiber.Ctx, store *session.Store) error {
 	}
 
 	// Extract user profile from ID token claims
+	gob.Register(map[string]interface{}{})
 	var profile map[string]interface{}
 	if err := idToken.Claims(&profile); err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
@@ -139,6 +132,6 @@ func (a *Authenticator) Callback(c *fiber.Ctx, store *session.Store) error {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
 
-	// Redirect to the logged-in page
+	// Redirect to the user route
 	return c.Redirect("/api/v1/auth/user", fiber.StatusTemporaryRedirect)
 }

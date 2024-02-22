@@ -8,6 +8,7 @@ import (
 	"github.com/kevinkimutai/savanna/rest/internal/adapters/authenticator"
 	"github.com/kevinkimutai/savanna/rest/internal/adapters/db"
 	"github.com/kevinkimutai/savanna/rest/internal/adapters/server"
+	smspkg "github.com/kevinkimutai/savanna/rest/internal/adapters/sms"
 	"github.com/kevinkimutai/savanna/rest/internal/application/api"
 )
 
@@ -22,7 +23,10 @@ func main() {
 	//ENV variables
 	DBURL := os.Getenv("POSTGRES_URL")
 	PORT := os.Getenv("PORT")
+	SMS_API_KEY := os.Getenv("AFRICASTALKING_API_KEY")
+	SMS_USERNAME := os.Getenv("AFRRICASTALKING_USERNAME")
 
+	//DB Instance
 	dbAdapter, err := db.NewAdapter(DBURL)
 	if err != nil {
 		log.Fatal("error connecting to db", err)
@@ -33,8 +37,13 @@ func main() {
 		log.Fatalf("Failed to initialize the authenticator: %v", err)
 	}
 
-	application := api.NewApplication(dbAdapter, auth)
+	//SMS Instance
+	smsAdapter := smspkg.NewAdapter(SMS_USERNAME, SMS_API_KEY)
 
+	//API Instance
+	application := api.NewApplication(dbAdapter, auth, smsAdapter)
+
+	//Fiber Server Instance
 	server := server.NewAdapter(application, PORT)
 
 	//Start Server

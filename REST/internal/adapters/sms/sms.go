@@ -12,7 +12,7 @@ type Adapter struct {
 	bulkrequest sms.BulkRequest
 }
 
-func New(username string, apiKey string) *Adapter {
+func NewAdapter(username string, apiKey string) *Adapter {
 	client := sms.Client{
 		ApiKey:    apiKey,
 		Username:  username,

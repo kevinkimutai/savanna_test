@@ -26,6 +26,29 @@ func (a *Adapter) CreateOrder(c *fiber.Ctx) error {
 
 }
 
-func (a *Adapter) GetOrders(c *fiber.Ctx) error {}
+func (a *Adapter) GetOrders(c *fiber.Ctx) error {
+	order := new(domain.Order)
 
-func (a *Adapter) GetOrder(c *fiber.Ctx) error {}
+	err := a.api.GetOrders(order)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+
+	return c.Status(fiber.StatusOK).JSON(&order)
+}
+
+func (a *Adapter) GetOrder(c *fiber.Ctx) error {
+	order := new(domain.Customer)
+
+	orderID := c.Query("customerId")
+	if orderID == "" {
+		c.Status(fiber.StatusBadRequest).SendString("missing orderID")
+	}
+
+	err := a.api.GetCustomer(orderID, order)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+
+	return c.Status(fiber.StatusOK).JSON(&order)
+}

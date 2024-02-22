@@ -11,6 +11,7 @@ type APIPort interface {
 	CreateCustomer(customer *domain.Customer) error
 	GetCustomers(customer *domain.Customer) error
 	GetCustomer(customerID string, customer *domain.Customer) error
+	DeleteCustomer(customerID string, customer *domain.Customer) error
 
 	//Auth
 	Login(fiber *fiber.Ctx, store *session.Store) error
@@ -18,4 +19,6 @@ type APIPort interface {
 
 	//Orders
 	CreateOrder(order *domain.Order) error
+	GetOrders(order *domain.Order) error
+	GetOrder(orderID string, order *domain.Order) error
 }

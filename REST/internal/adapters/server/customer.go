@@ -41,9 +41,9 @@ func (a *Adapter) GetCustomers(c *fiber.Ctx) error {
 func (a *Adapter) GetCustomer(c *fiber.Ctx) error {
 	customer := new(domain.Customer)
 
-	customerID := c.Query("userId")
+	customerID := c.Query("customerId")
 	if customerID == "" {
-		c.Status(fiber.StatusBadRequest).SendString("Missing customerID")
+		c.Status(fiber.StatusBadRequest).SendString("missing customerID")
 	}
 
 	err := a.api.GetCustomer(customerID, customer)
@@ -56,5 +56,17 @@ func (a *Adapter) GetCustomer(c *fiber.Ctx) error {
 }
 
 func (a *Adapter) DeleteCustomer(c *fiber.Ctx) error {
+	customer := new(domain.Customer)
 
+	customerID := c.Query("customerId")
+	if customerID == "" {
+		c.Status(fiber.StatusBadRequest).SendString("missing customerID")
+	}
+
+	err := a.api.DeleteCustomer(customerID, customer)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+
+	return c.Status(204).SendString("OK")
 }

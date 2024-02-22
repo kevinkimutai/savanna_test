@@ -13,3 +13,14 @@ func (a Adapter) GetCustomers(customer *domain.Customer) error {
 
 	return err
 }
+func (a Adapter) GetCustomer(customerID string, customer *domain.Customer) error {
+	err := a.db.First(&customer, customerID).Error
+
+	return err
+}
+
+func (a Adapter) DeleteCustomer(customerID string, customer *domain.Customer) error {
+	err := a.db.Delete(&customer, customerID).Error
+
+	return err
+}
